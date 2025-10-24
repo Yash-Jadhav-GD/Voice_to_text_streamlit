@@ -3,4 +3,3 @@ vosk
 sumy
 pydub
 soundfile
-
