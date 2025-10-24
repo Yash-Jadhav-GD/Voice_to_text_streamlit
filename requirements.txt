@@ -1,5 +1,6 @@
 streamlit
-vosk==0.3.59
+vosk
 sumy
 pydub
 soundfile
+
