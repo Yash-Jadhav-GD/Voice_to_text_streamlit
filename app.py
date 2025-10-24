@@ -21,7 +21,7 @@ Fully offline after first model download.
 """)
 
 # -------------------------
-# 1️⃣ Vosk model auto-download
+# 1️⃣ Vosk model auto-download with caching
 # -------------------------
 MODEL_DIR = "vosk-model-small-en-us-0.15"
 MODEL_URL = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
@@ -46,6 +46,9 @@ except Exception as e:
 # 2️⃣ Audio file uploader
 # -------------------------
 audio_file = st.file_uploader("Upload MP3/WAV file", type=["mp3", "wav"])
+
+# Adjustable summary length
+summary_sentences_count = st.slider("Number of sentences in summary", 1, 10, 3)
 
 def read_audio(file):
     # Try WAV first
@@ -77,30 +80,34 @@ if audio_file is not None:
         y = (y * 32767).astype(np.int16)
 
     # -------------------------
-    # 3️⃣ Transcription with Vosk
+    # 3️⃣ Transcription with progress bar
     # -------------------------
     st.info("Transcribing audio...")
     rec = KaldiRecognizer(model, sr)
     text = ""
     step = 4000
+    progress_bar = st.progress(0)
+    total_steps = len(y) // step + 1
+
     for i in range(0, len(y), step):
         chunk = y[i:i+step].tobytes()
         if rec.AcceptWaveform(chunk):
             result = rec.Result()
             res = json.loads(result)
             text += res.get("text", "") + " "
+        progress_bar.progress(min((i//step + 1)/total_steps, 1.0))
 
     st.subheader("📝 Transcribed Text")
     st.write(text)
 
     # -------------------------
-    # 4️⃣ Summarization with Sumy
+    # 4️⃣ Summarization
     # -------------------------
     if st.button("Summarize Text"):
         st.info("Summarizing...")
         parser = PlaintextParser.from_string(text, Tokenizer("english"))
         summarizer = LsaSummarizer()
-        summary_sentences = summarizer(parser.document, sentences_count=3)
+        summary_sentences = summarizer(parser.document, sentences_count=summary_sentences_count)
         summary = " ".join([str(s) for s in summary_sentences])
         st.subheader("📄 Summary")
         st.write(summary)
