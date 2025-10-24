@@ -8,6 +8,7 @@ import numpy as np
 import io
 import json
 from vosk import Model, KaldiRecognizer
+import streamlit.components.v1 as components
 
 st.title("🎤 MP3/WAV Voice-to-Text (Offline)")
 
@@ -91,14 +92,21 @@ if audio_file is not None:
         progress_bar.progress(min((i//step + 1)/total_steps, 1.0))
 
     st.subheader("📝 Transcribed Text")
-    st.text_area("Transcription", value=text, height=300, disabled=True)
+    st.text_area("Transcription", value=text, height=300, disabled=True, key="transcription_box")
 
     # -------------------------
-    # 4️⃣ Copy button
+    # 4️⃣ Copy button using JS
     # -------------------------
-    if st.button("📋 Copy Text"):
-        st.clipboard_set(text)
-        st.success("Transcription copied to clipboard!")
+    copy_button_html = f"""
+    <input type="button" value="📋 Copy Text" 
+        onclick="navigator.clipboard.writeText(document.getElementById('transcription_box').value)">
+    """
+    # Note: st.text_area does not have an ID, so we replicate with hidden textarea
+    copy_html = f"""
+    <textarea id="transcription_box" style="display:none;">{text}</textarea>
+    {copy_button_html}
+    """
+    components.html(copy_html)
 
 st.markdown("---")
 st.caption("Offline MP3/WAV transcription using Vosk (CPU only).")
