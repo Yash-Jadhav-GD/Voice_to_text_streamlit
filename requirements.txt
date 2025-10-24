@@ -1,6 +1,6 @@
-streamlit==1.26.0
-vosk==0.3.59
-sumy==0.11.0
-soundfile==0.12.1
-audioread==3.0.0
-numpy==1.26.0
+streamlit
+vosk
+sumy
+soundfile
+audioread
+numpy
