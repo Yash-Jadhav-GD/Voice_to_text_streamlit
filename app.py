@@ -8,20 +8,16 @@ import numpy as np
 import io
 import json
 from vosk import Model, KaldiRecognizer
-from sumy.parsers.plaintext import PlaintextParser
-from sumy.nlp.tokenizers import Tokenizer
-from sumy.summarizers.lsa import LsaSummarizer
 
-st.title("🎤 MP3/WAV Voice-to-Text + Summarization (Offline)")
+st.title("🎤 MP3/WAV Voice-to-Text (Offline)")
 
 st.markdown("""
 Upload an MP3 or WAV file.  
-Transcription uses Vosk, summarization uses Sumy (LSA).  
-Fully offline after first model download.
+Transcription uses Vosk and works fully offline after the first model download.
 """)
 
 # -------------------------
-# 1️⃣ Vosk model auto-download with caching
+# 1️⃣ Vosk model auto-download
 # -------------------------
 MODEL_DIR = "vosk-model-small-en-us-0.15"
 MODEL_URL = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
@@ -95,19 +91,7 @@ if audio_file is not None:
         progress_bar.progress(min((i//step + 1)/total_steps, 1.0))
 
     st.subheader("📝 Transcribed Text")
-    st.write(text)
-
-    # -------------------------
-    # 4️⃣ Simple Summarization
-    # -------------------------
-    if st.button("Summarize Text"):
-        st.info("Summarizing...")
-        parser = PlaintextParser.from_string(text, Tokenizer("english"))
-        summarizer = LsaSummarizer()
-        summary_sentences = summarizer(parser.document, sentences_count=3)
-        summary = " ".join([str(s) for s in summary_sentences])
-        st.subheader("📄 Summarized Text")
-        st.text_area("Summary", value=summary, height=150)
+    st.text_area("Transcription", value=text, height=300)
 
 st.markdown("---")
-st.caption("Offline MP3/WAV transcription + summarization using Vosk + Sumy (CPU only).")
+st.caption("Offline MP3/WAV transcription using Vosk (CPU only).")
