@@ -91,7 +91,8 @@ if audio_file is not None:
         progress_bar.progress(min((i//step + 1)/total_steps, 1.0))
 
     st.subheader("📝 Transcribed Text")
-    st.text_area("Transcription", value=text, height=300)
+    # Non-editable text area
+    st.text_area("Transcription", value=text, height=300, disabled=True)
 
 st.markdown("---")
 st.caption("Offline MP3/WAV transcription using Vosk (CPU only).")
