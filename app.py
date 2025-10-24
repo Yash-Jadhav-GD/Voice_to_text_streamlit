@@ -47,9 +47,6 @@ except Exception as e:
 # -------------------------
 audio_file = st.file_uploader("Upload MP3/WAV file", type=["mp3", "wav"])
 
-# Adjustable summary length
-summary_sentences_count = st.slider("Number of sentences in summary", 1, 10, 3)
-
 def read_audio(file):
     # Try WAV first
     try:
@@ -101,16 +98,16 @@ if audio_file is not None:
     st.write(text)
 
     # -------------------------
-    # 4️⃣ Summarization
+    # 4️⃣ Simple Summarization
     # -------------------------
     if st.button("Summarize Text"):
         st.info("Summarizing...")
         parser = PlaintextParser.from_string(text, Tokenizer("english"))
         summarizer = LsaSummarizer()
-        summary_sentences = summarizer(parser.document, sentences_count=summary_sentences_count)
+        summary_sentences = summarizer(parser.document, sentences_count=3)
         summary = " ".join([str(s) for s in summary_sentences])
-        st.subheader("📄 Summary")
-        st.write(summary)
+        st.subheader("📄 Summarized Text")
+        st.text_area("Summary", value=summary, height=150)
 
 st.markdown("---")
 st.caption("Offline MP3/WAV transcription + summarization using Vosk + Sumy (CPU only).")
